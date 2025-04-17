@@ -2,8 +2,8 @@
 #define INIT_H
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_opengl.h>
 
-void window_init(SDL_Window** window, int width, int height);
-void renderer_init(SDL_Renderer** renderer, SDL_Window** window);
+void window_init(SDL_Window** window, SDL_GLContext* gl_context, int width, int height);
 
 #endif //INIT_H

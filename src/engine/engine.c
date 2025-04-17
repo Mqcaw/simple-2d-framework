@@ -7,7 +7,7 @@
 #include "grid.h"
 
 SDL_Window* g_window;
-SDL_Renderer* g_renderer;
+SDL_GLContext g_gl_context;
 int g_width = 800;
 int g_height = 600;
 uint8_t g_rows = 50;
@@ -16,8 +16,7 @@ uint8_t g_cols = 50;
 void engine_init() {
     printf("Engine starting\n");
 
-    window_init(&g_window, g_width, g_height);
-    renderer_init(&g_renderer, &g_window);
+    window_init(&g_window, &g_gl_context, g_width, g_height);
 
     SDL_HideCursor();
 
@@ -27,7 +26,7 @@ void engine_init() {
 
 void engine_exit() {
     printf("Exiting engine\n");
-    SDL_DestroyRenderer(g_renderer);
+    SDL_GL_DestroyContext(g_gl_context);  
     SDL_DestroyWindow(g_window);
     SDL_Quit();
     printf("Engine exited\n");
