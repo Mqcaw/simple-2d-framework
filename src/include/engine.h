@@ -14,6 +14,7 @@ bool init_engine();
 void render(Grid grid, Entity* entities[], int num_entities, Window* window);
 void engine_update(Window* windows[], int num_windows, InputBuffer* input_buffer);
 bool is_engine_running();
+void engine_stop();
 void cleanup_engine(Window* windows[], int num_windows);
 
 #endif // ENGINE_H

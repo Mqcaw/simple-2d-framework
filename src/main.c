@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include <pthread.h>
 #include "engine.h"
 #include "window.h"
 #include "grid.h"
@@ -12,7 +11,7 @@
 #include "entity.h"
 
 #define TICK_RATE 240
-#define TICK_TIME_SEC (1 / TICK_RATE)
+#define TICK_TIME_NS (1e9 / TICK_RATE)
 
 InputBuffer input_buffer;
 Window window;
@@ -25,7 +24,7 @@ void* engine_loop(void* arg);
 void* render_loop(void* arg);
 void tick_grid(Grid* grid);
 void init_grid(Grid* grid);
-void process_inputs(InputBuffer* input_buffer, Grid* grid);
+void process_inputs(InputBuffer* input_buffer, Grid* grid, Entity* entities[], int num_entities);
 void test_grid_change(Grid* grid, int x, int y);
 void test();
 double now();
@@ -72,11 +71,11 @@ int main(int argc, char *argv[]) {
 
         accumulator += delta;
 
-        if (accumulator >= TICK_TIME_SEC) {
+        if (accumulator >= TICK_TIME_NS) {
             engine_update(windows, num_windows, &input_buffer);
-            process_inputs(&input_buffer, &grid);
+            process_inputs(&input_buffer, &grid, entities, num_entities);
             tick_grid(&grid);
-            accumulator -= TICK_TIME_SEC;
+            accumulator -= TICK_TIME_NS;
         }
 
         render(grid, entities, num_entities, &window);
@@ -115,12 +114,12 @@ void tick_grid(Grid* grid) {
 void init_grid(Grid* grid) {
     for (int i = 0; i < grid->num_rows; ++i) {
         for (int j = 0; j < grid->num_cols; ++j) {
-            //grid->array[i][j].walkable = (rand() / (double)RAND_MAX) < exp(-((i - 25)*(i - 25) + (j - 25)*(j - 25)) / (2.0 * sigma * sigma));
+           
         }
     }
 }
 
-void process_inputs(InputBuffer* input_buffer, Grid* grid) {
+void process_inputs(InputBuffer* input_buffer, Grid* grid, Entity* entities[], int num_entities) {
     for (size_t i = 0; i < input_buffer->count; ++i) {
         const SDL_Event* event = &input_buffer->events[i];
 
@@ -128,17 +127,27 @@ void process_inputs(InputBuffer* input_buffer, Grid* grid) {
         switch (event->type) {
             case SDL_EVENT_KEY_DOWN:
                 if (event->key.key == SDLK_LEFT) {
-                    printf("Move left\n");
+                    printf("Left key pressed\n");
+                } else if (event->key.key == SDLK_RIGHT) {
+                    printf("Right key pressed\n");
+                } else if (event->key.key == SDLK_UP) {
+                    printf("Up key pressed\n");
+                } else if (event->key.key == SDLK_DOWN) {
+                    printf("Down key pressed\n");
+                } else if (event->key.key == SDLK_ESCAPE) {
+                    printf("Escape key pressed\n");
+                    engine_stop();
                 }
 
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                printf("Mouse button pressed at (%f, %f)\n", event->button.x, event->button.y);
                 test_grid_change(grid, event->button.x, event->button.y);
 
         break;
             case SDL_EVENT_MOUSE_MOTION:
                 //printf("Mouse move (%f, %f)\n", event->button.x, event->button.y);
+                entities[0]->cell.x = (event->button.x / 800) * grid->num_cols;
+                entities[0]->cell.y = (event->button.y / 800) * grid->num_rows;
                 break;
             case SDL_EVENT_QUIT:
                 printf("Quit requested\n");
@@ -168,7 +177,5 @@ void test_grid_change(Grid* grid, int x, int y) {
 }
 
 double now() {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return ts.tv_sec + ts.tv_nsec / 1e9;
+    return SDL_GetTicksNS();
 }

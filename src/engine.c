@@ -15,6 +15,7 @@ bool engine_running = false;
 
 bool init_engine() {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+    SDL_HideCursor();
 
     srand(time(NULL));
 
@@ -44,7 +45,7 @@ void render(Grid grid, Entity* entities[], int num_entities, Window* window) {
         int cellHeight = (window->height) / grid.num_rows;
 
 
-        SDL_FRect cell = {entities[i]->cell.x * cellWidth, entities[i]->cell.x * cellHeight, cellWidth - grid.spacing, cellHeight - grid.spacing};
+        SDL_FRect cell = {entities[i]->cell.x * cellWidth, entities[i]->cell.y * cellHeight, cellWidth - grid.spacing, cellHeight - grid.spacing};
         SDL_RenderFillRect(window->renderer, &cell);
         }
 
@@ -88,6 +89,10 @@ void engine_update(Window* windows[], int num_windows, InputBuffer* input_buffer
 
 bool is_engine_running() {
     return engine_running;
+}
+
+void engine_stop() {
+    engine_running = false;
 }
 
 void cleanup_engine(Window* windows[], int num_windows) {
