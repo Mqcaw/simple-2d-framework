@@ -7,7 +7,7 @@ Window create_window(char* title, int width, int height, SDL_Color bg_color) {
     window.init_height = height;
     window.bg_color = bg_color;
 
-    window.window = SDL_CreateWindow(window.title, window.init_width, window.init_height, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_TRANSPARENT);
+    window.window = SDL_CreateWindow(window.title, window.init_width, window.init_height, SDL_WINDOW_TRANSPARENT | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_RESIZABLE);
     if (!window.window) {
         SDL_Log("SDL_CreateWindow Error: %s", SDL_GetError());
         SDL_Quit();
